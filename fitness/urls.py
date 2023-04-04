@@ -1,9 +1,13 @@
-from django.urls import path
-from .views import WorkoutList, WorkoutDetail, ExerciseList, ExerciseDetail
+from django.urls import path,include
+from .views import WorkoutViewSet,ExerciseViewSet, FitnessDataViewSet
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register(r'fitnessdata', FitnessDataViewSet,basename='fitnessdata')
+router.register(r'workouts', WorkoutViewSet,basename='workouts')
+router.register(r'exercises', ExerciseViewSet,basename='exercises')
+
 
 urlpatterns = [
-    path('workouts/', WorkoutList.as_view(),name='workout-list'),
-    path('workouts/<int:pk>/', WorkoutDetail.as_view(),name='workout-detail'),
-    path('exercises/', ExerciseList.as_view(),name='exercise-list'),
-    path('exercises/<int:pk>/', ExerciseDetail.as_view(),name='exercise-detail'),
+    path('', include(router.urls)),
 ]

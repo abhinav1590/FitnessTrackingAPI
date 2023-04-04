@@ -1,21 +1,33 @@
-from django.shortcuts import render
-from rest_framework import generics
-from .models import Workout, Exercise
-from .serializers import WorkoutSerializer, ExerciseSerializer
+from rest_framework import viewsets, permissions
+from .models import Workout, Exercise, FitnessData
+from .serializers import WorkoutSerializer, ExerciseSerializer, FitnessDataSerializer
 
-class WorkoutList(generics.ListCreateAPIView):
-    queryset = Workout.objects.all()
+class WorkoutViewSet(viewsets.ModelViewSet):
     serializer_class = WorkoutSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-class WorkoutDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Workout.objects.all()
-    serializer_class = WorkoutSerializer
-
-class ExerciseList(generics.ListCreateAPIView):
-    queryset = Exercise.objects.all()
+    def get_queryset(self):
+        return Workout.objects.filter(user=self.request.user)
+    
+    
+class ExerciseViewSet(viewsets.ModelViewSet):
     serializer_class = ExerciseSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-class ExerciseDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Exercise.objects.all()
-    serializer_class = ExerciseSerializer
+    def get_queryset(self):
+        return Exercise.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class FitnessDataViewSet(viewsets.ModelViewSet):
+    serializer_class = FitnessDataSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return FitnessData.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
